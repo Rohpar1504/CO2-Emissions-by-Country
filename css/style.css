@@ -1,8 +1,10 @@
+/* style.css */
+
 #visualization {
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #030303;
+    background-color: #f0f0f0;
 }
