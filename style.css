@@ -1,0 +1,123 @@
+let currentScene = 1;
+
+d3.csv("data/co2_emissions_by_country.csv").then(data => {
+    // Process data if necessary
+    data.forEach(d => {
+        d.Emissions = +d.Emissions;
+    });
+    createVisualization(data);
+});
+
+function createVisualization(data) {
+    const svg = d3.select("#visualization").append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", "0 0 800 600");
+
+    const scenes = [
+        { id: "scene1", create: () => createScene1(svg, data) },
+        { id: "scene2", create: () => createScene2(svg, data) },
+        { id: "scene3", create: () => createScene3(svg, data) },
+    ];
+
+    function updateScene(sceneIndex) {
+        svg.selectAll("*").remove();
+        scenes[sceneIndex - 1].create();
+    }
+
+    d3.select("#prev").on("click", () => {
+        if (currentScene > 1) {
+            currentScene--;
+            updateScene(currentScene);
+        }
+    });
+
+    d3.select("#next").on("click", () => {
+        if (currentScene < scenes.length) {
+            currentScene++;
+            updateScene(currentScene);
+        }
+    });
+
+    // Initial scene setup
+    updateScene(currentScene);
+}
+
+function createScene1(svg, data) {
+    svg.append("text")
+        .attr("x", 100)
+        .attr("y", 50)
+        .text("CO2 Emissions Overview")
+        .style("font-size", "24px");
+
+    // Example content for Scene 1
+    svg.append("circle")
+        .attr("cx", 200)
+        .attr("cy", 200)
+        .attr("r", 50)
+        .style("fill", "blue");
+
+    svg.append("text")
+        .attr("x", 200)
+        .attr("y", 200)
+        .text("Click next to see top emitters")
+        .style("font-size", "16px")
+        .style("fill", "black")
+        .attr("dy", -10);
+}
+
+function createScene2(svg, data) {
+    svg.append("text")
+        .attr("x", 100)
+        .attr("y", 50)
+        .text("Top Emitters")
+        .style("font-size", "24px");
+
+    // Example content for Scene 2
+    const topEmitters = data.slice(0, 10);
+    svg.selectAll("rect")
+        .data(topEmitters)
+        .enter()
+        .append("rect")
+        .attr("x", 150)
+        .attr("y", (d, i) => 100 + i * 30)
+        .attr("width", d => d.Emissions / 100)
+        .attr("height", 20)
+        .style("fill", "red");
+
+    topEmitters.forEach((d, i) => {
+        svg.append("text")
+            .attr("x", 150)
+            .attr("y", 100 + i * 30)
+            .attr("dy", 15)
+            .attr("dx", 5)
+            .text(d.Country)
+            .style("font-size", "12px")
+            .style("fill", "black");
+    });
+
+    svg.append("text")
+        .attr("x", 150)
+        .attr("y", 400)
+        .text("Click next to see trends over time")
+        .style("font-size", "16px")
+        .style("fill", "black")
+        .attr("dy", -10);
+}
+
+function createScene3(svg, data) {
+    svg.append("text")
+        .attr("x", 100)
+        .attr("y", 50)
+        .text("Trends Over Time")
+        .style("font-size", "24px");
+
+    // Example content for Scene 3
+    svg.append("line")
+        .attr("x1", 100)
+        .attr("y1", 100)
+        .attr("x2", 300)
+        .attr("y2", 300)
+        .style("stroke", "green")
+        .style("stroke-width", 5);
+}
