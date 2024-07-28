@@ -5,16 +5,16 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log(data);
         // Example: Create a simple bar chart
         const svg = d3.select("#visualization").append("svg")
-            .attr("width", 800)
-            .attr("height", 600);
+            .attr("width", 8000)
+            .attr("height", 6000);
 
         // Global Overview Visualization
 
         d3.csv("data/global_average_data.csv").then(function(data) {
             // Set the dimensions and margins of the graph
-            const margin = {top: 10, right: 30, bottom: 30, left: 60},
-                width = 460 - margin.left - margin.right,
-                height = 400 - margin.top - margin.bottom;
+            const margin = {top: 100, right: 300, bottom: 300, left: 600},
+                width = 4600 - margin.left - margin.right,
+                height = 4000 - margin.top - margin.bottom;
 
             // Append the svg object to the body of the page
             const svg = d3.select("#visualization")
@@ -140,118 +140,3 @@ document.addEventListener("DOMContentLoaded", function() {
             .style("display", "none");
     });
 });
-
-
-// Promise.all([
-//     d3.json("data/world_atlas.json"),  // Adjust path as necessary
-//     d3.csv("data/co2_emissions_by_country.csv")  // Adjust path as necessary
-// ]).then(function([world, emissions]) {
-//     const emissionsMap = new Map(emissions.map(d => [d.countryCode, +d.emissions]));
-
-//     const svg = d3.select("#visualization").append("svg")
-//         .attr("width", 960)
-//         .attr("height", 600);
-
-//     const projection = d3.geoMercator()
-//         .scale(150)
-//         .translate([480, 300]);
-
-//     const path = d3.geoPath()
-//         .projection(projection);
-
-//     const colorScale = d3.scaleThreshold()
-//         .domain([0.5, 2, 5, 10, 20, 30])
-//         .range(d3.schemeBlues[7]);
-
-//     svg.selectAll("path")
-//         .data(topojson.feature(world, world.objects.countries).features)
-//         .enter().append("path")
-//             .attr("fill", d => colorScale(emissionsMap.get(d.id)))
-//             .attr("d", path)
-//             .on("mouseover", (event, d) => {
-//                 const emissionsValue = emissionsMap.get(d.id) || "No data";
-//                 d3.select("#tooltip")
-//                     .style("left", event.pageX + "px")
-//                     .style("top", event.pageY + "px")
-//                     .style("display", "inline-block")
-//                     .html(`Country: ${d.properties.name}<br>Emissions: ${emissionsValue} tons per capita`);
-//             })
-//             .on("mouseout", () => {
-//                 d3.select("#tooltip").style("display", "none");
-//             });
-
-//     // Adding a legend
-//     const x = d3.scaleLinear()
-//         .domain([0, 30])
-//         .range([0, 300]);
-
-//     const legend = svg.append("g")
-//         .attr("id", "legend")
-//         .attr("transform", "translate(10,500)");
-
-//     legend.selectAll("rect")
-//         .data(colorScale.range().map(color => {
-//             const d = colorScale.invertExtent(color);
-//             if (d[0] == null) d[0] = x.domain()[0];
-//             if (d[1] == null) d[1] = x.domain()[1];
-//             return d;
-//         }))
-//         .enter().append("rect")
-//             .attr("height", 8)
-//             .attr("x", d => x(d[0]))
-//             .attr("width", d => x(d[1]) - x(d[0]))
-//             .attr("fill", d => colorScale(d[0]));
-
-//     // Draw the legend axis
-//     legend.append("g")
-//         .call(d3.axisBottom(x)
-//             .tickSize(13)
-//             .tickFormat(x => Math.round(x) + " tons")
-//             .tickValues(colorScale.domain()))
-//         .select(".domain")
-//         .remove();
-
-//     // Tooltip div for interactivity
-//     d3.select("body").append("div")
-//         .attr("id", "tooltip")
-//         .style("position", "absolute")
-//         .style("text-align", "center")
-//         .style("width", "120px")
-//         .style("height", "50px")
-//         .style("padding", "2px")
-//         .style("font", "12px sans-serif")
-//         .style("background", "lightsteelblue")
-//         .style("border", "0px")
-//         .style("border-radius", "8px")
-//         .style("pointer-events", "none")
-//         .style("opacity", 0.9)
-//         .style("display", "none");
-// });
-
-
-// // Interactive Maps Visualization
-
-// // Load and display the World Atlas TopoJSON
-// d3.json("path_to_world_atlas.json").then(function(topojsonData) {
-//     // Load your regional emissions data
-//     d3.csv("path_to_regional_data.csv").then(function(emissionsData) {
-//         // Prepare the data — join topojson data with emissions data
-
-//         // Setup projection and path generator
-//         const projection = d3.geoMercator().scale(150).translate([width / 2, height / 1.5]);
-//         const path = d3.geoPath().projection(projection);
-
-//         // Draw each country
-//         svg.selectAll("path")
-//           .data(topojson.feature(topojsonData, topojsonData.objects.countries).features)
-//           .enter().append("path")
-//             .attr("d", path)
-//             .attr("fill", function(d) { /* Set fill based on emissions data */ });
-
-//         // Add interactivity
-//         svg.selectAll("path")
-//           .on("click", function(event, d) {
-//             // Function to update the visualization with the selected region's data
-//           });
-//     });
-// });
