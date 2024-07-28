@@ -1,15 +1,20 @@
 document.addEventListener("DOMContentLoaded", function() {
-    d3.csv("path_to_your_data.csv", function(data) {
+    // Load your data
+    d3.csv("data/co2_emissions_by_country.csv", function(data) {
         console.log(data);
-        
         const svg = d3.select("#visualization").append("svg")
             .attr("width", 8000)
             .attr("height", 6000);
 
+        // Global Overview Visualization
+
         d3.csv("data/global_average_data.csv").then(function(data) {
+            // Set the dimensions and margins of the graph
             const margin = {top: 100, right: 300, bottom: 300, left: 600},
-                width = 460 - margin.left - margin.right,
-                height = 400 - margin.top - margin.bottom;
+                width = 4600 - margin.left - margin.right,
+                height = 4000 - margin.top - margin.bottom;
+
+            // Append the svg object to the body of the page
             const svg = d3.select("#visualization")
             .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -17,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function() {
             .append("g")
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
+
+            // Add X axis --> it is a date format
             const x = d3.scaleLinear()
             .domain(d3.extent(data, function(d) { return d.year; }))
             .range([ 0, width ]);
@@ -24,12 +31,14 @@ document.addEventListener("DOMContentLoaded", function() {
             .attr("transform", "translate(0," + height + ")")
             .call(d3.axisBottom(x));
 
+            // Add Y axis
             const y = d3.scaleLinear()
             .domain([0, d3.max(data, function(d) { return +d.value; })])
             .range([ height, 0 ]);
             svg.append("g")
             .call(d3.axisLeft(y));
 
+            // Add the line
             svg.append("path")
             .datum(data)
             .attr("fill", "none")
@@ -44,8 +53,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     Promise.all([
-        d3.json("data/world_atlas.json"),
-        d3.csv("data/co2_emissions_by_country.csv")
+        d3.json("data/world_atlas.json"),  // Adjust path as necessary
+        d3.csv("data/co2_emissions_by_country.csv")  // Adjust path as necessary
     ]).then(function([world, emissions]) {
         const emissionsMap = new Map(emissions.map(d => [d.countryCode, +d.emissions]));
 
@@ -81,6 +90,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     d3.select("#tooltip").style("display", "none");
                 });
 
+        // Adding a legend
         const x = d3.scaleLinear()
             .domain([0, 30])
             .range([0, 300]);
@@ -101,6 +111,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 .attr("x", d => x(d[0]))
                 .attr("width", d => x(d[1]) - x(d[0]))
                 .attr("fill", d => colorScale(d[0]));
+
+        // Draw the legend axis
         legend.append("g")
             .call(d3.axisBottom(x)
                 .tickSize(13)
@@ -109,6 +121,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .select(".domain")
             .remove();
 
+        // Tooltip div for interactivity
         d3.select("body").append("div")
             .attr("id", "tooltip")
             .style("position", "absolute")
