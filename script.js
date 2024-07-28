@@ -2,7 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", function() {
     // Load your data
-    d3.csv("path_to_your_data.csv", function(data) {
+    d3.csv("data/co2_emissions_by_country.csv", function(data) {
         // Process data and create visualizations
         console.log(data);
         // Example: Create a simple bar chart
@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Global Overview Visualization
 
-        d3.csv("path_to_global_average_data.csv").then(function(data) {
+        d3.csv("data/global_average_data.csv").then(function(data) {
             // Set the dimensions and margins of the graph
             const margin = {top: 10, right: 30, bottom: 30, left: 60},
                 width = 460 - margin.left - margin.right,
