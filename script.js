@@ -3,16 +3,16 @@ document.addEventListener("DOMContentLoaded", function() {
     d3.csv("data/co2_emissions_by_country.csv", function(data) {
         console.log(data);
         const svg = d3.select("#visualization").append("svg")
-            .attr("width", 8000)
-            .attr("height", 6000);
+            .attr("width", 800)
+            .attr("height", 600);
 
         // Global Overview Visualization
 
         d3.csv("data/global_average_data.csv").then(function(data) {
             // Set the dimensions and margins of the graph
-            const margin = {top: 100, right: 300, bottom: 300, left: 600},
-                width = 4600 - margin.left - margin.right,
-                height = 4000 - margin.top - margin.bottom;
+            const margin = {top: 10, right: 30, bottom: 30, left: 60},
+                width = 460 - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
 
             // Append the svg object to the body of the page
             const svg = d3.select("#visualization")
