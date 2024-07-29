@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", function() {
     DisplayWorldAtlasMap();
 });
 
+// play around with values (unable to fix display)
 function DisplayGlobalCO2Avg() {
     d3.csv("data/global_average_data.csv").then(data => {
-        // play around with values (unable to fix display)
         const svg = SVGSetUp(460, 400, 100, 300, 300, 600);
         const { x, y } = XandYAxesSetUp(svg, data);
         drawAvgEmissionsGraph(svg, data, x, y);
