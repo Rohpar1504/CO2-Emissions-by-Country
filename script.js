@@ -1,36 +1,36 @@
 document.addEventListener("DOMContentLoaded", function() {
-    initializeGlobalAverageChart();
-    initializeInteractiveMap();
+    DisplayGlobalCO2Avg();
+    DisplayWorldAtlasMap();
 });
 
-function initializeGlobalAverageChart() {
+function DisplayGlobalCO2Avg() {
     d3.csv("data/global_average_data.csv").then(data => {
-        const svg = setupSVG(460, 400, 100, 300, 300, 600);
-        const { x, y } = setupAxes(svg, data);
-
-        drawLineChart(svg, data, x, y);
+        // play around with values (unable to fix display)
+        const svg = SVGSetUp(460, 400, 100, 300, 300, 600);
+        const { x, y } = XandYAxesSetUp(svg, data);
+        drawAvgEmissionsGraph(svg, data, x, y);
     });
 }
 
-function initializeInteractiveMap() {
-    Promise.all([
-        d3.json("data/world_atlas.json"),
-        d3.csv("data/co2_emissions_by_country.csv")
-    ]).then(([world, emissions]) => {
-        const svg = d3.select("#visualization").append("svg")
-            .attr("width", 960).attr("height", 600);
+// unable to fix
+function DisplayWorldAtlasMap() {
+    Promise.all([d3.json("data/world_atlas.json"), d3.csv("data/co2_emissions_by_country.csv")]).then(([atlas, emissions]) => {
+        const svg = d3.select("#visualization")
+        .append("svg")
+        .attr("width", 960)
+        .attr("height", 600);
         const projection = d3.geoMercator().scale(150).translate([480, 300]);
         const path = d3.geoPath().projection(projection);
-        const emissionsMap = new Map(emissions.map(d => [d.countryCode, +d.emissions]));
+        // still unable to figure out how to merge the topoJSON and emissions csv
+        const emissionsMap = new Map(emissions.map(d => [d.CountryCode, d.emissions]));
         const colorScale = getColorScale();
-
-        drawMap(svg, world, path, colorScale, emissionsMap);
-        createLegend(svg, colorScale);
-        setupTooltip();
+        drawColoredAtlast(svg, atlas, path, colorScale, emissionsMap);
+        initializeLegendAtlas(svg, colorScale);
+        initializeToolTip();
     });
 }
 
-function setupSVG(width, height, top, right, bottom, left) {
+function SVGSetUp(width, height, top, right, bottom, left) {
     return d3.select("#visualization").append("svg")
         .attr("width", width + left + right)
         .attr("height", height + top + bottom)
@@ -38,7 +38,7 @@ function setupSVG(width, height, top, right, bottom, left) {
         .attr("transform", `translate(${left}, ${top})`);
 }
 
-function setupAxes(svg, data) {
+function XandYAxesSetUp(svg, data) {
     const x = d3.scaleLinear()
         .domain(d3.extent(data, d => d.year))
         .range([0, svg.attr("width")]);
@@ -54,7 +54,7 @@ function setupAxes(svg, data) {
     return { x, y };
 }
 
-function drawLineChart(svg, data, x, y) {
+function drawAvgEmissionsGraph(svg, data, x, y) {
     svg.append("path")
         .datum(data)
         .attr("fill", "none")
@@ -72,7 +72,7 @@ function getColorScale() {
         .range(d3.schemeBlues[7]);
 }
 
-function drawMap(svg, world, path, colorScale, emissionsMap) {
+function drawColoredAtlast(svg, world, path, colorScale, emissionsMap) {
     svg.selectAll("path")
         .data(topojson.feature(world, world.objects.countries).features)
         .enter().append("path")
@@ -95,7 +95,7 @@ function hideTooltip() {
     d3.select("#tooltip").style("display", "none");
 }
 
-function createLegend(svg, colorScale) {
+function initializeLegendAtlas(svg, colorScale) {
     const legend = svg.append("g")
         .attr("id", "legend")
         .attr("transform", "translate(10,500)");
@@ -125,7 +125,7 @@ function createLegend(svg, colorScale) {
         .select(".domain").remove();
 }
 
-function setupTooltip() {
+function initializeToolTip() {
     d3.select("body").append("div")
         .attr("id", "tooltip")
         .attr("class", "tooltip")
