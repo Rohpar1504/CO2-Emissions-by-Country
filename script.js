@@ -11,61 +11,50 @@ document.addEventListener("DOMContentLoaded", function() {
             .attr("height", 600);
 
         // Further D3.js visualization code goes here
+
     });
 });
 
 // Global Overview Visualization
 
-d3.csv("data/global_average_data.csv", function(d) {
-    return { year : d3.parseTime(d.year), value : +d.value }
-}).then(function(data) {
-    // Define dimensions and margins
-    const margin = {top: 20, right: 20, bottom: 30, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+d3.csv("data/global_average_data.csv").then(function(data) {
+    // Set the dimensions and margins of the graph
+    const margin = {top: 10, right: 30, bottom: 30, left: 60},
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
 
-    // Define scales
-    const x = d3.scaleTime()
-        .domain(d3.extent(data, d => d.year))
-        .range([0, width]);
+    // Append the svg object to the body of the page
+    const svg = d3.select("#visualization")
+    .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
+    // Add X axis --> it is a date format
+    const x = d3.scaleLinear()
+    .domain(d3.extent(data, function(d) { return d.year; }))
+    .range([ 0, width ]);
+    svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
+
+    // Add Y axis
     const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.value)])
-        .range([height, 0]);
-
-    // Create SVG element
-    const svg = d3.select("#visualization").append("svg")
-        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
-        .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    // Add X and Y axes
+    .domain([0, d3.max(data, function(d) { return +d.value; })])
+    .range([ height, 0 ]);
     svg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
-
-    svg.append("g")
-        .call(d3.axisLeft(y));
+    .call(d3.axisLeft(y));
 
     // Add the line
     svg.append("path")
-        .datum(data)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 2)
-        .attr("d", d3.line()
-            .x(d => x(d.year))
-            .y(d => y(d.value))
-        );
-
-    // Optionally, add area fill under the line
-    svg.append("path")
-        .datum(data)
-        .attr("fill", "steelblue")
-        .attr("opacity", 0.3)
-        .attr("d", d3.area()
-            .x(d => x(d.year))
-            .y0(height)
-            .y1(d => y(d.value))
-        );
+    .datum(data)
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5)
+    .attr("d", d3.line()
+        .x(function(d) { return x(d.year) })
+        .y(function(d) { return y(d.value) })
+    )
 });
